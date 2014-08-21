@@ -185,6 +185,16 @@ class Template extends HTML implements Renderable {
   }
 
   /**
+   * Check if the current template file exists.
+   */
+  public function templateFileExists ($template = null)
+  {
+    if (is_null($template))
+      $template = $this->_template;
+    return file_exists($this->getPath($template));
+  }
+
+  /**
    * Render a template. Optionally take a filename to render,
    * otherwise use the one set in the constructor.
    */
@@ -263,7 +273,9 @@ class Template extends HTML implements Renderable {
    */
   protected function slurp ($template)
   {
-    $filename = $this->_templateDir . \DIRECTORY_SEPARATOR . $template;
+    // TODO:  This can theoretically get overwritten by a 'filename' key
+    // in the context array.  There has to be some clever way around this.
+    $filename = $this->getPath($template);
 
     // Pull context variables, as references, into this scope.
     // Try not to change things inside templates - IT WILL BITE YOU.
@@ -284,6 +296,14 @@ class Template extends HTML implements Renderable {
     }
 
     require $filename;
+  }
+
+  /**
+   * Get a path for a template.
+   */
+  protected function getPath ($template)
+  {
+    return $this->_templateDir . \DIRECTORY_SEPARATOR . $template;
   }
 
   /**
